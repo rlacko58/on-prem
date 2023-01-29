@@ -1,0 +1,17 @@
+name: Update VyOS Config
+run-name: Update VyOS Config
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: config-playbook/main.yml
+          directory: ./vyos-router
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          requirements: requirements.galaxy.yaml
+        options: |
+          --extra-vars ansible_password=${{ secrets.VYOS_PASSWORD }}

@@ -1,0 +1,67 @@
+- name: Render new config
+  hosts: vyos_ssh
+  vars_files:
+    - secret.yaml
+  tasks:
+    - name: "Check if config changed"
+      template:
+        src: "config.j2"
+        dest: "/config/config.boot"
+      register: config_change
+      check_mode: yes
+      diff: yes
+    - name: "Copy the new config"
+      template:
+        src: "config.j2"
+        dest: "/home/ansible/configs/config.boot"
+      when: config_change.changed
+
+- name: Update config
+  hosts: vyos_network_os
+  vars_files:
+    - secret.yaml
+  tasks:
+    - name: Load new config
+      vyos.vyos.vyos_command:
+        commands:
+          - configure
+          - load /home/ansible/configs/config.boot
+          - commit
+          - save
+      when: hostvars['vyos_ssh']['config_change'].changed
+
+- name: Download latest config
+  hosts: vyos_ssh
+  vars_files:
+    - secret.yaml
+  tasks:
+    - name: "Download current config"
+      fetch:
+        src: "/config/config.boot"
+        dest: "/tmp/latest-config.boot"
+        flat: yes
+
+- name: Upload config changes to on-prem-configs repo
+  hosts: localhost
+  connection: local
+  vars_files:
+    - secret.yaml
+  tasks:
+    - name: Render ssh private key
+      copy:
+        content: "{{ on_prem_configs_ssh_key }}"
+        dest: "/tmp/on-prem-configs-ssh-key"
+    - name: Download the on-prem-configs repo
+      git:
+        repo: git@github.com:rlacko58/on-prem-configs.git
+        dest: /tmp/on-prem-configs
+        key_file: /tmp/on-prem-configs-ssh-key
+        force: yes
+    - name: "Copy new file, commit changes, push"
+      shell: |
+        cd /tmp/on-prem-configs
+        yes | cp -i /tmp/latest-config.boot ./vyos-config
+        git config user.name "Laszlo Rafael"
+        git config user.email "rlacko99@gmail.com"
+        git config core.sshCommand "ssh -i /tmp/on-prem-configs-ssh-key"
+        if [[ -n $(git status -s) ]]; then git commit -am "Add Vyos change - `date`"; git push origin main; fi
