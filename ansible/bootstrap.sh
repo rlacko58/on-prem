@@ -6,7 +6,7 @@
 [[ ! -d .venv ]] && python3 -m venv .venv
 source .venv/bin/activate
 
-pip3 install ansible ansible-lint ansible-pylibssh
+pip3 install -r requirements.txt
 
 ansible-galaxy install "$1" -r requirements.galaxy.yaml
 

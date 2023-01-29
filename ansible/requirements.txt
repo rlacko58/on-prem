@@ -1,0 +1,5 @@
+ansible
+ansible-compat
+ansible-core
+ansible-lint
+ansible-pylibssh
