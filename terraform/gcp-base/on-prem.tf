@@ -2,6 +2,8 @@ resource "google_project" "on-prem" {
   name       = "on-prem"
   project_id = "on-prem-778"
   org_id     = local.org_id
+
+  billing_account = data.google_billing_account.default_billing_account.id
 }
 
 resource "google_service_account" "on-prem-sa" {
