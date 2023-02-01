@@ -1,6 +1,11 @@
 name: Update VyOS Config
 run-name: Update VyOS Config
 on: [push]
+
+env:
+  ANSIBLE_DIR: "ansible"
+  PLAYBOOK_VYOS: "vyos/main.yaml"
+
 jobs:
   run-vyos-ansible-pipeline:
     runs-on: ubuntu-latest
@@ -14,11 +19,11 @@ jobs:
         uses: actions/cache@v3
         id: cache
         with:
-          path: ./ansible/env
+          path: ./${{ env.ANSIBLE_DIR }}/env
           key: ${{ runner.os }}-env-v3-${{ hashFiles('**/requirements.txt') }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        working-directory: ./ansible
+        working-directory: ./${{ env.ANSIBLE_DIR }}
         run: |
           python3 -m venv env
           source env/bin/activate
@@ -54,7 +59,7 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add ~/.ssh/id_ed25519
       - name: Deploy via ansible
-        working-directory: ./ansible
+        working-directory: ./${{ env.ANSIBLE_DIR }}
         run: |
           source env/bin/activate
-          ansible-playbook vyos/main.yaml -i inventory.yaml --vault-password-file <(echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }})
+          ansible-playbook ${{ env.PLAYBOOK_VYOS }} -i inventory.yaml --vault-password-file <(echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }})
