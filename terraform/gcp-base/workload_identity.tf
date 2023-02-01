@@ -25,9 +25,3 @@ resource "google_service_account_iam_member" "workload_identity_user_org_admin" 
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${local.repo}"
 }
-
-resource "google_service_account_iam_member" "workload_identity_user_on_prem" {
-  service_account_id = google_service_account.on-prem-sa.name
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${local.repo}"
-}
