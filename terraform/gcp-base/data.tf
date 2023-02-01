@@ -1,18 +1,12 @@
 locals {
-  org_id = "319675273017"
-  sa_roles_on_project = [
-    "roles/storage.admin",
-    "roles/secretmanager.admin",
-    "roles/servicemanagement.admin",
-    "roles/servicemanagement.configEditor",
-    "roles/servicemanagement.serviceController"
-  ]
+  org_id         = "319675273017"
   org_project_id = "org-base"
   org_base_apis = [
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "storage.googleapis.com",
-    "cloudbilling.googleapis.com"
+    "cloudbilling.googleapis.com",
+    "secretmanager.googleapis.com"
   ]
   org_bucket_name   = "terraform-state-org-base"
   region            = "europe-west3"
