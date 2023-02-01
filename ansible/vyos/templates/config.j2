@@ -122,6 +122,8 @@ interfaces {
         openvpn-option "--cipher AES-256-CBC"
         openvpn-option "--auth SHA256"
         openvpn-option "--client-to-client"
+        openvpn-option "--push 'dhcp-option DNS 192.168.72.2'"
+        openvpn-option "--push 'dhcp-option DOMAIN-ROUTE maze.local'"
         persistent-tunnel { }
         protocol "udp"
         server {
