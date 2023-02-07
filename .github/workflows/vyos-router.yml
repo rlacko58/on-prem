@@ -8,7 +8,10 @@ env:
 
 jobs:
   run-vyos-ansible-pipeline:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    container:
+      image: ubuntu:latest
+      options: --user root
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
